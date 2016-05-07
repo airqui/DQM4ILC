@@ -98,13 +98,16 @@ namespace dqm4hep
                             DQMXmlHelper::readParameterValue(xmlHandle, "ChipID2", m_ChipID2));
     m_ChipID3 = 0;
     RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-                            DQMXmlHelper::readParameterValue(xmlHandle,"ChipID3", m_ChipID3));
+                            DQMXmlHelper::readParameterValue(xmlHandle, "ChipID3", m_ChipID3));
     m_ChipID4 = 0;
     RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-                            DQMXmlHelper::readParameterValue(xmlHandle,"ChipID4", m_ChipID4));
+                            DQMXmlHelper::readParameterValue(xmlHandle, "ChipID4", m_ChipID4));
     m_ChipID5 = 0;
     RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-                            DQMXmlHelper::readParameterValue(xmlHandle,"ChipID5", m_ChipID5));
+                            DQMXmlHelper::readParameterValue(xmlHandle, "ChipID5", m_ChipID5));
+    m_ChipID6 = 0;
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
+                            DQMXmlHelper::readParameterValue(xmlHandle, "ChipID6", m_ChipID6));
 
     //-----------------------------------------------------
 
@@ -123,7 +126,9 @@ namespace dqm4hep
     m_ChannelNum5 = 0;
     RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
                             DQMXmlHelper::readParameterValue(xmlHandle, "ChannelNum5", m_ChannelNum5));
-
+    m_ChannelNum6 = 0;
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
+                            DQMXmlHelper::readParameterValue(xmlHandle, "ChannelNum6", m_ChannelNum6));
     //-----------------------------------------------------
 
     m_pADC_hitbit0_1 = NULL;
@@ -146,6 +151,10 @@ namespace dqm4hep
     m_pADC_hitbit1_5 = NULL;
     m_pADC_hitbit1Agree_5 = NULL;
 
+    m_pADC_hitbit0_6 = NULL;
+    m_pADC_hitbit1_6 = NULL;
+    m_pADC_hitbit1Agree_6 = NULL;
+
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb0_ch1", m_pADC_hitbit0_1));
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb1_ch1", m_pADC_hitbit1_1));
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb1_ch1_Agree", m_pADC_hitbit1Agree_1));
@@ -166,8 +175,12 @@ namespace dqm4hep
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb1_ch5", m_pADC_hitbit1_5));
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb1_ch5_Agree", m_pADC_hitbit1Agree_5));
 
-    m_pTrueEvents = NULL;
-    RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "TrueEvents", m_pTrueEvents));
+    RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb0_ch6", m_pADC_hitbit0_6));
+    RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb1_ch6", m_pADC_hitbit1_6));
+    RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "ADC_hb1_ch6_Agree", m_pADC_hitbit1Agree_6));
+
+    m_pT0Events = NULL;
+    RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "T0Events", m_pT0Events));
 
     //-----------------------------------------------------
 
@@ -210,11 +223,7 @@ namespace dqm4hep
     int ChipIDIndex = 3;
     int NChannelsIndex = 4;
     int TDCFirstChannelIndex = 5;
-    int TDCLastChannelIndex = TDCFirstChannelIndex+36-1;
-    int ADCFirstChannelIndex = TDCLastChannelIndex;
-    int ADCLastChannelIndex = ADCFirstChannelIndex+36;
-
-    int nTrueEvents = 0;
+    int ADCFirstChannelIndex = TDCFirstChannelIndex+36;
 
     EVENT::LCEvent *pLCEvent = pEvent->getEvent<EVENT::LCEvent>();
 
@@ -256,85 +265,97 @@ namespace dqm4hep
 		      continue;
 		    }
 
-		    // just look into the entries for the 4 selected chips
-		    // this makes the code less general but faster
-		    if( (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID1) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID2) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID3) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID4) || (pAHCALRaw->getIntVal(ChipIDIndex) ==m_ChipID5) ) {
+	
 
-		      // Vectors for storing our TDC and ADC by channel
+		    for(int f=0 ; f<nChannels ; f++)		// This loop iterates over the channels in each readout cycle
+		      {
 
-		      std::vector<int> tdcRAW(nChannels);
-		      std::vector<int> adcRAW(nChannels);
+			bool T0ch_1=false, T0ch_2=false, T0ch_3=false, T0ch_4=false, T0ch_5=false, T0ch_6=false;
+			if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID1 && f == m_ChannelNum1 ) T0ch_1=true;
+			if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID2 && f == m_ChannelNum2 ) T0ch_2=true;
+			if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID3 && f == m_ChannelNum3 ) T0ch_3=true;
+			if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID4 && f == m_ChannelNum4 ) T0ch_4=true;
+			if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID5 && f == m_ChannelNum5 ) T0ch_5=true;
+			if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID6 && f == m_ChannelNum6 ) T0ch_6=true;
 
-		      std::vector<int> tdc(nChannels);
-		      std::vector<int> adc(nChannels);
-
-		      std::vector<int> hitbit_tdc(nChannels);
-		      std::vector<int> gainbit_tdc(nChannels);
-
-		      std::vector<int> hitbit_adc(nChannels);
-		      std::vector<int> gainbit_adc(nChannels);
-
-		      for(int f=0 ; f<nChannels ; f++)		// This loop iterates over the channels in each readout cycle
-			{
-
-			    // just look into the entries for the 4 selected channels
-			    // this makes the code less general but faster
-
-			    if( (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID1 && f == m_ChannelNum1 ) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID2 && f == m_ChannelNum2) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID3 && f == m_ChannelNum3) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID4 && f == m_ChannelNum4) || (pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID5 && f == m_ChannelNum5) ){ 
-
-			      tdcRAW[f] = pAHCALRaw->getIntVal(TDCFirstChannelIndex+f);
-			      adcRAW[f] = pAHCALRaw->getIntVal(ADCFirstChannelIndex+f);
-
-			      tdc[f] = tdcRAW[f]%4096;
-			      adc[f] = adcRAW[f]%4096;
-
-			      hitbit_adc[f] = (adcRAW[f]& 0x1000)/4096;
-			      gainbit_adc[f] = (adcRAW[f]& 0x2000)/8192;
-
-			      hitbit_tdc[f] = (tdcRAW[f]& 0x1000)/4096;
-			      gainbit_tdc[f] = (tdcRAW[f]& 0x2000)/8192;
-
-			      // Incrementing true event counter
-			      if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID1 && f == m_ChannelNum1 ) m_pTrueEvents->get<TH1I>()->Fill(1);
-			      if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID2 && f == m_ChannelNum2 ) m_pTrueEvents->get<TH1I>()->Fill(2);
-			      if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID3 && f == m_ChannelNum3 ) m_pTrueEvents->get<TH1I>()->Fill(3);
-			      if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID4 && f == m_ChannelNum4 ) m_pTrueEvents->get<TH1I>()->Fill(4);
-			      if(pAHCALRaw->getIntVal(ChipIDIndex) == m_ChipID5 && f == m_ChannelNum5 ) m_pTrueEvents->get<TH1I>()->Fill(5);
-
-			m_pTrueEvents->get<TH1I>()->Fill(0);
+			if( T0ch_1==true || T0ch_2==true || T0ch_3==true || T0ch_4==true || T0ch_5==true || T0ch_6==true ){ 
 
 
-			      // Filling ADC histograms
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==0) m_pADC_hitbit0_1->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==1) m_pADC_hitbit1_1->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_1->get<TH1I>()->Fill(adc[f]);
+			  // Vectors for storing our TDC and ADC by channel
 
-			      if(f==m_ChannelNum2 && hitbit_adc[f]==0) m_pADC_hitbit0_2->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum2 && hitbit_adc[f]==1) m_pADC_hitbit1_2->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_2->get<TH1I>()->Fill(adc[f]);
+			  std::vector<int> tdcRAW(nChannels);
+			  std::vector<int> adcRAW(nChannels);
 
-			      if(f==m_ChannelNum3 && hitbit_adc[f]==0) m_pADC_hitbit0_3->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum3 && hitbit_adc[f]==1) m_pADC_hitbit1_3->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_3->get<TH1I>()->Fill(adc[f]);
+			  std::vector<int> tdc(nChannels);
+			  std::vector<int> adc(nChannels);
 
-			      if(f==m_ChannelNum4 && hitbit_adc[f]==0) m_pADC_hitbit0_4->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum4 && hitbit_adc[f]==1) m_pADC_hitbit1_4->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_4->get<TH1I>()->Fill(adc[f]);
+			  std::vector<int> hitbit_tdc(nChannels);
+			  std::vector<int> gainbit_tdc(nChannels);
 
-			      if(f==m_ChannelNum5 && hitbit_adc[f]==0) m_pADC_hitbit0_5->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum5 && hitbit_adc[f]==1) m_pADC_hitbit1_5->get<TH1I>()->Fill(adc[f]);
-			      if(f==m_ChannelNum1 && hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_5->get<TH1I>()->Fill(adc[f]);
+			  std::vector<int> hitbit_adc(nChannels);
+			  std::vector<int> gainbit_adc(nChannels);
 
-			    }//if f== chosen channel
+			  tdcRAW[f] = pAHCALRaw->getIntVal(TDCFirstChannelIndex+f);
+			  adcRAW[f] = pAHCALRaw->getIntVal(ADCFirstChannelIndex+f);
 
-			}//for f
+			  tdc[f] = tdcRAW[f]%4096;
+			  adc[f] = adcRAW[f]%4096;
 
-		    };//if chip == chosen chip
+			  hitbit_adc[f] = (adcRAW[f] & 0x1000)?1:0;//(adcRAW[f] / 4096) % 2;//(adcRAW[f]& 0x1000)/4096;
+			  gainbit_adc[f] = (adcRAW[f] & 0x2000)?1:0;////adcRAW[f] / 8192;//(adcRAW[f]& 0x2000)/8192;
+
+			  hitbit_tdc[f] = (tdcRAW[f] & 0x1000)?1:0;
+			  gainbit_tdc[f] = (tdcRAW[f] & 0x2000)?1:0;
+
+
+			  if(adc[f]<0) continue;	// Skipping negative/bad events
+
+	
+			  // Filling ADC histograms
+			  if(T0ch_1) {
+			    if(hitbit_adc[f]==0) m_pADC_hitbit0_1->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1) m_pADC_hitbit1_1->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_1->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && adc[f]>1000) m_pT0Events->get<TH1I>()->Fill(1);
+			  }
+			  if(T0ch_2) {
+			    if(hitbit_adc[f]==0) m_pADC_hitbit0_2->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1) m_pADC_hitbit1_2->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_2->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && adc[f]>1000) m_pT0Events->get<TH1I>()->Fill(2);
+			  }
+			  if(T0ch_3) {
+			    if(hitbit_adc[f]==0) m_pADC_hitbit0_3->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1) m_pADC_hitbit1_3->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_3->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && adc[f]>1000) m_pT0Events->get<TH1I>()->Fill(3);
+			  }
+			  if(T0ch_4) {
+			    if(hitbit_adc[f]==0) m_pADC_hitbit0_4->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1) m_pADC_hitbit1_4->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_4->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && adc[f]>1000) m_pT0Events->get<TH1I>()->Fill(4);
+			  }
+			  if(T0ch_5) {
+			    if(hitbit_adc[f]==0) m_pADC_hitbit0_5->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1) m_pADC_hitbit1_5->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_5->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && adc[f]>1000) m_pT0Events->get<TH1I>()->Fill(5);
+			  }
+			  if(T0ch_6) {
+			    if(hitbit_adc[f]==0) m_pADC_hitbit0_6->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1) m_pADC_hitbit1_6->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && hitbit_tdc[f]==1) m_pADC_hitbit1Agree_6->get<TH1I>()->Fill(adc[f]);
+			    if(hitbit_adc[f]==1 && adc[f]>1000) m_pT0Events->get<TH1I>()->Fill(6);
+			  }
+
+		
+			}//if f== chosen channel && chip =chosen chip
+
+		      }//for f
 
 		  }//for elements
 
-		//  if(nTrueEvents>0) m_pTrueEvents->get<TH1I>()->Fill(1);
-//		  LOG4CXX_INFO( dqmMainLogger , " - - - Total True events this readout cycle : " << nTrueEvents << " - - - " );
 
 	      }// if LCGENERICOBJECT
 

@@ -16,7 +16,7 @@
     <monitorelementcollector name="ahcal_me_collector"/>
   </network>
   
-  <cycle type="TimerCycle" value="10" timeout="5" />
+  <cycle type="TimerCycle" value="2" timeout="1" />
   
   <module type="AHCALRawModuleT0" name="MyAHCALRawModuleT0">
     
@@ -24,7 +24,7 @@
     
     <parameter name="ChipID1"> 169 </parameter>
     <parameter name="ChannelNum1"> 29 </parameter>
-
+    
     <parameter name="ChipID2"> 177 </parameter>
     <parameter name="ChannelNum2"> 23 </parameter>
 
@@ -36,97 +36,117 @@
 
     <parameter name="ChipID5"> 217 </parameter>
     <parameter name="ChannelNum5"> 23 </parameter>
+
+    <parameter name="ChipID6"> 227 </parameter>
+    <parameter name="ChannelNum6"> 6 </parameter>
     
-    <!-- case 1 -->
+    <!-- T0_ 1 -->
 
     <monitorElement ID="ADC_hb0_ch1"
-		    name="ADC_hb0_ch1" path="/case1" type="TH1I" title="ADC counts when hit bit 0" 
+		    name="ADC_hb0_ch1" path="/T0_1" type="TH1I" title="ADC counts when hit bit 0" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch1"
-		    name="ADC_hb1_ch1" path="/case1" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch1" path="/T0_1" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch1_Agree"
-		    name="ADC_hb1_ch1_Agree" path="/case1" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch1_Agree" path="/T0_1" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
-    <!-- case 2 -->
+    <!-- T0_ 2 -->
     
     <monitorElement ID="ADC_hb0_ch2"
-		    name="ADC_hb0_ch2" path="/case2" type="TH1I" title="ADC counts when hit bit 0" 
+		    name="ADC_hb0_ch2" path="/T0_2" type="TH1I" title="ADC counts when hit bit 0" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch2"
-		    name="ADC_hb1_ch2" path="/case2" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch2" path="/T0_2" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch2_Agree"
-		    name="ADC_hb1_ch2_Agree" path="/case2" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch2_Agree" path="/T0_2" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
 
-    <!-- case 3 -->
+    <!-- T0_ 3 -->
 
     <monitorElement ID="ADC_hb0_ch3"
-		    name="ADC_hb0_ch3" path="/case3" type="TH1I" title="ADC counts when hit bit 0" 
+		    name="ADC_hb0_ch3" path="/T0_3" type="TH1I" title="ADC counts when hit bit 0" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch3"
-		    name="ADC_hb1_ch3" path="/case3" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch3" path="/T0_3" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch3_Agree"
-		    name="ADC_hb1_ch3_Agree" path="/case3" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch3_Agree" path="/T0_3" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
 
-    <!-- case 4 -->
+    <!-- T0_ 4 -->
 
     <monitorElement ID="ADC_hb0_ch4"
-		    name="ADC_hb0_ch4" path="/case4" type="TH1I" title="ADC counts when hit bit 0" 
+		    name="ADC_hb0_ch4" path="/T0_4" type="TH1I" title="ADC counts when hit bit 0" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch4"
-		    name="ADC_hb1_ch4" path="/case4" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch4" path="/T0_4" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch4_Agree"
-		    name="ADC_hb1_ch4_Agree" path="/case4" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch4_Agree" path="/T0_4" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
 
-    <!-- case 5 -->
+    <!-- T0_ 5 -->
 
     <monitorElement ID="ADC_hb0_ch5"
-		    name="ADC_hb0_ch5" path="/case5" type="TH1I" title="ADC counts when hit bit 0" 
+		    name="ADC_hb0_ch5" path="/T0_5" type="TH1I" title="ADC counts when hit bit 0" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch5"
-		    name="ADC_hb1_ch5" path="/case5" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch5" path="/T0_5" type="TH1I" title="ADC counts when hit bit 1" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
     <monitorElement ID="ADC_hb1_ch5_Agree"
-		    name="ADC_hb1_ch5_Agree" path="/case5" type="TH1I" title="ADC counts when hit bit 1" 
+		    name="ADC_hb1_ch5_Agree" path="/T0_5" type="TH1I" title="ADC counts when hit bit 1" 
+		    nBins="1048" min="0.5" max="4096.5" 
+		    resetPolicy="EndOfRun" drawOption="HISTO"/>
+
+    <!-- T0_ 6 -->
+
+    <monitorElement ID="ADC_hb0_ch6"
+		    name="ADC_hb0_ch6" path="/T0_6" type="TH1I" title="ADC counts when hit bit 0" 
 		    nBins="1048" min="0.5" max="4096.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
-    <!-- true events -->
+    <monitorElement ID="ADC_hb1_ch6"
+		    name="ADC_hb1_ch6" path="/T0_6" type="TH1I" title="ADC counts when hit bit 1" 
+		    nBins="1048" min="0.5" max="4096.5" 
+		    resetPolicy="EndOfRun" drawOption="HISTO"/>
+    
+    <monitorElement ID="ADC_hb1_ch6_Agree"
+		    name="ADC_hb1_ch6_Agree" path="/T0_6" type="TH1I" title="ADC counts when hit bit 1" 
+		    nBins="1048" min="0.5" max="4096.5" 
+		    resetPolicy="EndOfRun" drawOption="HISTO"/>
+    
+    <!-- T0 events -->
 
-    <monitorElement ID="TrueEvents"
-		    name="TrueEvents" path="/" type="TH1I" title="Number of true events in file (from T0 channels)" 
-		    nBins="6" min="-0.5" max="5.5" 
+    <monitorElement ID="T0Events"
+		    name="T0Events" path="/" type="TH1I" title="Number of T0 events, adc>1000, per T0 channel" 
+		    nBins="7" min="-0.5" max="6.5" 
 		    resetPolicy="EndOfRun" drawOption="HISTO"/>
     
   </module>

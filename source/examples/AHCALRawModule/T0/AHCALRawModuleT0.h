@@ -28,8 +28,8 @@
  * @copyright CNRS , IPNL
  */
 
-#ifndef AHCALRAWMODULE_H
-#define AHCALRAWMODULE_H
+#ifndef AHCALRAWMODULET0_H
+#define AHCALRAWMODULET0_H
 
 #include "dqm4hep/DQMAnalysisModule.h"
 
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-        DQMMonitorElementPtr                        m_pTrueEvents;
+        DQMMonitorElementPtr                        m_pT0Events;
 
         DQMMonitorElementPtr                        m_pADC_hitbit0_1;
         DQMMonitorElementPtr                        m_pADC_hitbit1_1;
@@ -79,6 +79,10 @@ protected:
         DQMMonitorElementPtr                        m_pADC_hitbit1_5;
         DQMMonitorElementPtr                        m_pADC_hitbit1Agree_5;
 
+        DQMMonitorElementPtr                        m_pADC_hitbit0_6;
+        DQMMonitorElementPtr                        m_pADC_hitbit1_6;
+        DQMMonitorElementPtr                        m_pADC_hitbit1Agree_6;
+
 	bool                                      m_dumpEvent;
 
         int                                       m_ChipID1;
@@ -86,16 +90,18 @@ protected:
         int                                       m_ChipID3;
         int                                       m_ChipID4;
         int                                       m_ChipID5;
+        int                                       m_ChipID6;
 
         int                                       m_ChannelNum1;
         int                                       m_ChannelNum2;
         int                                       m_ChannelNum3;
         int                                       m_ChannelNum4;
         int                                       m_ChannelNum5;
+        int                                       m_ChannelNum6;
 
 
 }; 
 
 } 
 
-#endif  //  AHCALRAWMODULE_H
+#endif  //  AHCALRAWMODULET0_H
