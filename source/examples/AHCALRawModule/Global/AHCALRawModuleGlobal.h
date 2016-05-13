@@ -65,7 +65,26 @@ protected:
         DQMMonitorElementPtr                        m_pWrongGB;
         DQMMonitorElementPtr                        m_pWrongBits;
 
-	bool                                      m_dumpEvent;
+	bool                                        m_dumpEvent;
+
+	int                                         CycleNrIndex;
+	int                                         BxIDIndex;
+	int                                         EvtNrIndex;
+	int                                         ChipIDIndex;
+	int                                         NChannelsIndex;
+	int                                         TDCFirstChannelIndex;
+	int                                         ADCFirstChannelIndex;
+
+	int                                         LDAIndex;
+	int                                         portIndex;
+	int                                         T1Index;
+	int                                         T2Index;
+	int                                         T3Index;
+	int                                         T4Index;
+	int                                         T5Index;
+	int                                         T6Index;
+	int                                         TDIFIndex;
+	int                                         TPWRIndex;
 
 }; 
 

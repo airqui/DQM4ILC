@@ -90,6 +90,64 @@ namespace dqm4hep
 
     //m_pNHitElement = NULL;
 
+    //---------------------------------------------------------------------
+
+    CycleNrIndex = 0;
+    BxIDIndex = 0;
+    EvtNrIndex = 0;
+    ChipIDIndex = 0;
+    NChannelsIndex = 0;
+    TDCFirstChannelIndex = 0;
+    ADCFirstChannelIndex = 0;
+
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "CycleNrIndex", CycleNrIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "BxIDIndex", BxIDIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "EvtNrIndex", EvtNrIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle, 
+													     "NChannelsIndex", NChannelsIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "TDCFirstChannelIndex", TDCFirstChannelIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "ADCFirstChannelIndex", ADCFirstChannelIndex));
+
+    if(BxIDIndex = 0 || EvtNrIndex == 0 || ChipIDIndex == 0 || NChannelsIndex == 0 || TDCFirstChannelIndex == 0 ||  ADCFirstChannelIndex == 0) LOG4CXX_ERROR( dqmMainLogger , "LCGenericObject indices were read successfuly but were invalid - this may be a problem with your steering file");
+
+    //---------------------------------------------------------------------
+
+    LDAIndex = 0;
+    portIndex = 0;
+    T1Index = 0;
+    T2Index = 0;
+    T3Index = 0;
+    T4Index = 0;
+    T5Index = 0;
+    T6Index = 0;
+    TDIFIndex = 0;
+    TPWRIndex = 0;
+    
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "LDAIndex", LDAIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "portIndex", portIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "T1Index", T1Index));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "T2Index", T2Index));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "T3Index", T3Index));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "T4Index", T4Index));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "T5Index", T5Index));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "T6Index", T6Index));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "TDIFIndex", TDIFIndex));
+    RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, DQMXmlHelper::readParameterValue(xmlHandle,
+													     "TPWRIndex", TPWRIndex));
 
     //---------------------------------------------------------------------
     //channel 1
@@ -110,7 +168,7 @@ namespace dqm4hep
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "WrongGB", m_pWrongGB));
     RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, DQMXmlHelper::bookMonitorElement(this, xmlHandle, "WrongBits", m_pWrongBits));
 
-  
+    // m_pADC_500->get<TH2I>->
 
     //-----------------------------------------------------
     m_dumpEvent = false;
@@ -146,7 +204,15 @@ namespace dqm4hep
   StatusCode AHCALRawModuleGlobal::processEvent(DQMEvent *pEvent)
   {
 
-    int CycleNrIndex = 0;
+    //int CycleNrIndex = 0;
+    //int BxIDIndex = 1;
+    //int EvtNrIndex = 2;
+    //int ChipIDIndex = 3;
+    //int NChannelsIndex = 4;
+    //int TDCFirstChannelIndex = 5;
+    //int ADCFirstChannelIndex = TDCFirstChannelIndex+36;
+
+    int EventCntIndex = 1;
     int BxIDIndex = 1;
     int EvtNrIndex = 2;
     int ChipIDIndex = 3;
@@ -176,6 +242,13 @@ namespace dqm4hep
 
 	EVENT::LCCollection *pLCCollection = pLCEvent->getCollection(collectionName);
 
+	if(collectionName=="TempSensor")
+	  {
+
+	    
+
+	  }
+
 	if(collectionName=="EUDAQDataScCAL")
 	  {
 
@@ -203,59 +276,79 @@ namespace dqm4hep
 
 			// Vectors for storing our TDC and ADC by channel
 
+			int tdcRAW;
+			int adcRAW;
+			int tdc;
+			int adc;
+			int hitbit_tdc;
+			int gainbit_tdc;
+			int hitbit_adc;
+			int gainbit_adc;
 
-			std::vector<int> tdcRAW(nChannels);
-			std::vector<int> adcRAW(nChannels);
+			tdcRAW = pAHCALRaw->getIntVal(TDCFirstChannelIndex+f);
+			adcRAW = pAHCALRaw->getIntVal(ADCFirstChannelIndex+f);
 
-			std::vector<int> tdc(nChannels);
-			std::vector<int> adc(nChannels);
+			tdc = tdcRAW%4096;
+			adc = adcRAW%4096;
 
-			std::vector<int> hitbit_tdc(nChannels);
-			std::vector<int> gainbit_tdc(nChannels);
+			hitbit_adc = (adcRAW & 0x1000)?1:0;
+			gainbit_adc = (adcRAW & 0x2000)?1:0;
 
-			std::vector<int> hitbit_adc(nChannels);
-			std::vector<int> gainbit_adc(nChannels);
+			hitbit_tdc = (tdcRAW & 0x1000)?1:0;
+			gainbit_tdc = (tdcRAW & 0x2000)?1:0;
 
-			tdcRAW[f] = pAHCALRaw->getIntVal(TDCFirstChannelIndex+f);
-			adcRAW[f] = pAHCALRaw->getIntVal(ADCFirstChannelIndex+f);
+			//std::vector<int> tdcRAW(nChannels);
+			//std::vector<int> adcRAW(nChannels);
 
-			tdc[f] = tdcRAW[f]%4096;
-			adc[f] = adcRAW[f]%4096;
+			//std::vector<int> tdc(nChannels);
+			//std::vector<int> adc(nChannels);
 
-			hitbit_adc[f] = (adcRAW[f] & 0x1000)?1:0;//(adcRAW[f] / 4096) % 2;//(adcRAW[f]& 0x1000)/4096;
-			gainbit_adc[f] = (adcRAW[f] & 0x2000)?1:0;////adcRAW[f] / 8192;//(adcRAW[f]& 0x2000)/8192;
+			//std::vector<int> hitbit_tdc(nChannels);
+			//std::vector<int> gainbit_tdc(nChannels);
 
-			hitbit_tdc[f] = (tdcRAW[f] & 0x1000)?1:0;
-			gainbit_tdc[f] = (tdcRAW[f] & 0x2000)?1:0;
+			//std::vector<int> hitbit_adc(nChannels);
+			//std::vector<int> gainbit_adc(nChannels);
 
-			if(hitbit_adc[f]==1 && hitbit_tdc[f]==1 && adc[f]>300 ) m_pADC_300->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
-			if(hitbit_adc[f]==1 && hitbit_tdc[f]==1 && adc[f]>500 ) m_pADC_500->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
-			if(hitbit_adc[f]==1 && hitbit_tdc[f]==1 && adc[f]>1000 ) m_pADC_1000->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
-			if(hitbit_adc[f]==1 && hitbit_tdc[f]==1 && adc[f]>1500 ) m_pADC_1500->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
+			//tdcRAW[f] = pAHCALRaw->getIntVal(TDCFirstChannelIndex+f);
+			//adcRAW[f] = pAHCALRaw->getIntVal(ADCFirstChannelIndex+f);
+
+			//tdc[f] = tdcRAW[f]%4096;
+			//adc[f] = adcRAW[f]%4096;
+
+			//hitbit_adc[f] = (adcRAW[f] & 0x1000)?1:0;//(adcRAW[f] / 4096) % 2;//(adcRAW[f]& 0x1000)/4096;
+			//gainbit_adc[f] = (adcRAW[f] & 0x2000)?1:0;////adcRAW[f] / 8192;//(adcRAW[f]& 0x2000)/8192;
+
+			//hitbit_tdc[f] = (tdcRAW[f] & 0x1000)?1:0;
+			//gainbit_tdc[f] = (tdcRAW[f] & 0x2000)?1:0;
+
+			if(hitbit_adc==1 && hitbit_tdc==1 && adc>300 ) m_pADC_300->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
+			if(hitbit_adc==1 && hitbit_tdc==1 && adc>500 ) m_pADC_500->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
+			if(hitbit_adc==1 && hitbit_tdc==1 && adc>1000 ) m_pADC_1000->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
+			if(hitbit_adc==1 && hitbit_tdc==1 && adc>1500 ) m_pADC_1500->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));
 
 			totalNB++;
-			if( (gainbit_tdc[f] != gainbit_adc[f]) && hitbit_adc[f]==1  ) {
+			if( (gainbit_tdc != gainbit_adc) && hitbit_adc==1  ) {
 			  NB_1++;
 			  m_pWrongBits->get<TGraph>()->SetPoint(1, 1 , NB_1/totalNB);
 			}
-			if( (hitbit_tdc[f] != hitbit_adc[f]) && (gainbit_tdc[f] != gainbit_adc[f]) && hitbit_adc[f]==1  )  {
+			if( (hitbit_tdc != hitbit_adc) && (gainbit_tdc != gainbit_adc) && hitbit_adc==1  )  {
 			  NB_2++;
 			}
-			if( (hitbit_tdc[f] != hitbit_adc[f]) && hitbit_adc[f]==0 ) {
+			if( (hitbit_tdc != hitbit_adc) && hitbit_adc==0 ) {
 			  NB_3++;
 			}
-			if( (gainbit_tdc[f] != gainbit_adc[f]) && hitbit_adc[f]==0  ) {
+			if( (gainbit_tdc != gainbit_adc) && hitbit_adc==0  ) {
 			  NB_4++;
 			}
-			if( (hitbit_tdc[f] != hitbit_adc[f]) && (gainbit_tdc[f] != gainbit_adc[f]) && hitbit_adc[f]==0  ) {
+			if( (hitbit_tdc != hitbit_adc) && (gainbit_tdc != gainbit_adc) && hitbit_adc==0  ) {
 			  NB_5++;
 			}
 
-			if(hitbit_adc[f]==1 && hitbit_tdc[f]==0 && adc[f]>0 ) {
+			if(hitbit_adc==1 && hitbit_tdc==0 && adc>0 ) {
 			  totalNHB++;
 			  m_pWrongHB->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));//SetBinContent(f,pAHCALRaw->getIntVal(ChipIDIndex),totalNHB/totalNB);
 			}
-			if(hitbit_adc[f]==1 && (gainbit_tdc[f]!=gainbit_adc[f]) && adc[f]>0 ) {
+			if(hitbit_adc==1 && (gainbit_tdc!=gainbit_adc) && adc>0 ) {
 			  totalNGB++;
 			  m_pWrongGB->get<TH2I>()->Fill(f,pAHCALRaw->getIntVal(ChipIDIndex));//->SetBinContent(f,pAHCALRaw->getIntVal(ChipIDIndex),totalNGB/totalNB);
 			}

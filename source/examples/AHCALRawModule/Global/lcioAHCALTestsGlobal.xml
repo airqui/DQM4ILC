@@ -22,6 +22,41 @@
     
     <parameter name="DumpEvent"> false </parameter>
     
+    <parameter name="CycleNrIndex"> 0 </parameter>
+    
+    <parameter name="BxIDIndex"> 1 </parameter>
+    
+    <parameter name="EvtNrIndex"> 2 </parameter>
+    
+    <parameter name="ChipIDIndex"> 3 </parameter>
+    
+    <parameter name="NChannelsIndex"> 4 </parameter>
+    
+    <parameter name="TDCFirstChannelIndex"> 5 </parameter>
+    
+    <parameter name="ADCFirstChannelIndex"> 41 </parameter>
+
+
+    <parameter name="LDAIndex"> 0 </parameter>
+
+    <parameter name="portIndex"> 1 </parameter>
+
+    <parameter name="T1Index"> 2 </parameter>
+
+    <parameter name="T2Index"> 3 </parameter>
+
+    <parameter name="T3Index"> 4 </parameter>
+
+    <parameter name="T4Index"> 5 </parameter>
+
+    <parameter name="T5Index"> 6 </parameter>
+
+    <parameter name="T6Index"> 7 </parameter>
+
+    <parameter name="TDIFIndex"> 8 </parameter>
+
+    <parameter name="TPWRIndex"> 9 </parameter>
+    
      
     <!-- ADC -->
     <monitorElement ID="ADC_300"
